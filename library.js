@@ -1,4 +1,23 @@
 window.addEventListener("DOMContentLoaded", () => {
+  let titlesToBuy;
+  if (localStorage.getItem("titlesToBuy")) {
+    titlesToBuy = JSON.parse(localStorage.getItem("titlesToBuy"));
+  }
+
+  const listBooksToBuy = document.getElementById("books-to-buy");
+
+  titlesToBuy.forEach((title) => {
+    const li = document.createElement("li");
+    const allLi = document.getElementsByTagName("li");
+    let diversityTitle = true;
+    Array.from(allLi).forEach((item) => {
+      if (item.innerText === title) diversityTitle = false;
+    });
+    if (diversityTitle) {
+      li.innerText = title;
+      listBooksToBuy.appendChild(li);
+    }
+  });
   fetch("https://striveschool-api.herokuapp.com/books")
     .then((response) => {
       console.log(response);
@@ -16,19 +35,15 @@ window.addEventListener("DOMContentLoaded", () => {
         ".card a:nth-of-type(2)"
       );
       const allBuyButtons = document.querySelectorAll(".card a:nth-of-type(1)");
-      const listBooksToBuy = document.getElementById("books-to-buy");
-      let titlesToBuy = [];
 
       Array.from(allCardsImg).forEach((img, i) => {
-        allCardsImg[i].setAttribute("src", usersObj[i].img);
+        img.setAttribute("src", usersObj[i].img);
         allCardsTitle[i].innerHTML = usersObj[i].title;
         allCardsP[i].innerHTML = usersObj[i].price + "€";
         allDiscardButtons[i].onclick = (e) => {
           e.target.parentNode.parentNode.style.display = "none";
         };
         allBuyButtons[i].onclick = (e) => {
-          const li = document.createElement("li");
-          const allLi = document.getElementsByTagName("li");
           const closestH5 = e.target.closest(".card").querySelector("h5");
           let verifyDiversity = true;
           if (titlesToBuy.includes(closestH5.innerText)) {
@@ -39,6 +54,18 @@ window.addEventListener("DOMContentLoaded", () => {
             console.log(titlesToBuy);
             localStorage.setItem("titlesToBuy", JSON.stringify(titlesToBuy));
           }
+          titlesToBuy.forEach((title) => {
+            const li = document.createElement("li");
+            const allLi = document.getElementsByTagName("li");
+            let diversityTitle = true;
+            Array.from(allLi).forEach((item) => {
+              if (item.innerText === title) diversityTitle = false;
+            });
+            if (diversityTitle) {
+              li.innerText = title;
+              listBooksToBuy.appendChild(li);
+            }
+          });
         };
       });
     });
